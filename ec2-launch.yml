@@ -1,0 +1,28 @@
+---
+- hosts: localhost
+  gather_facts: false
+  tasks:
+  - name: launch ec2 instance
+    ec2:
+     key_name: jul10-demo
+     instance_type: t2.micro
+     image: ami-835b4efa
+     group: web
+     user_data: |
+                #!/bin/bash
+                sudo apt-get update
+                sudo apt-get install python -y
+     region: us-west-2
+     instance_tags:
+        Name: ec2_ansible
+     exact_count: 1
+     count_tag: Name   
+
+- hosts: tag_Name_ec2_ansible
+  user: ubuntu
+  become: yes
+  tasks:
+  - name: install apache
+    package:
+     name: apache2
+     state: latest
